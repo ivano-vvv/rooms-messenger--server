@@ -8,7 +8,7 @@ export default class Room {
     let firstMessage = new Message(
       true,
       null,
-      `The room "${roomName} created"`
+      `The room "${roomName}" created"`
     );
 
     this.id = uuidv4();
