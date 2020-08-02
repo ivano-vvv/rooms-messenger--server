@@ -3,15 +3,15 @@ const Message = require("./messageClass");
 const { v4: uuidv4 } = require("uuid");
 
 class Room {
-  constructor(creatorName, roomName, id) {
-    this.id = id;
+  constructor(creatorName, roomName, roomId, firstUserId) {
+    this.id = roomId;
     this.name = roomName;
-    this.users = [new User(creatorName)];
+    this.users = [new User(creatorName, firstUserId)];
     this.history = [new Message(true, null, `The room "${roomName}" created"`)];
   }
 
-  addUser(userName) {
-    this.users.push(new User(userName));
+  addUser(userName, userId) {
+    this.users.push(new User(userName, userId));
 
     this._addSystemMessage(`${userName} joined the Room`);
   }

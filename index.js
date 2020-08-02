@@ -6,17 +6,18 @@ const port = process.env.PORT || 5000;
 const data = require("./data/rooms");
 
 io.on("connection", (socket) => {
+  let userId = socket.id;
   console.log("user connected");
 
   socket.on("createRoom", ({ creatorName, roomName }) => {
-    let id = data.createRoom(creatorName, roomName);
-    socket.join(id);
-    let room = data.getRoomById(id);
+    let roomId = data.createRoom(creatorName, roomName, userId);
+    socket.join(roomId);
+    let room = data.getRoomById(roomId);
     console.log(
       `user ${creatorName} (${room.users[0].id}) created a Room named "${roomName}" (${room.id})`
     );
 
-    io.to(id).emit("roomData", { room, userData: room.users[0] });
+    io.to(roomId).emit("roomData", { room, userData: room.users[0] });
     console.log(
       `user ${creatorName} (${room.users[0].id}) get data about the Room "${roomName}" (${room.id})`
     );
@@ -25,7 +26,7 @@ io.on("connection", (socket) => {
   socket.on("joinRoom", ({ roomId, userName }) => {
     let room = data.getRoomById(roomId);
     if (room) {
-      room.addUser(userName);
+      room.addUser(userName, userId);
 
       io.to(roomId).emit("newUser", {
         message: room.getLastMessage(),
