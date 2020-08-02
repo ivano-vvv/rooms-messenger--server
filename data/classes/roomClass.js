@@ -24,7 +24,7 @@ class Room {
       this._addSystemMessage(`${name} left the Room`);
     }
   }
-  addUserMessage(isSystem, author, body) {
+  addUserMessage(author, body) {
     this._addMessage(false, author, body);
   }
   getLastMessage() {
@@ -38,8 +38,7 @@ class Room {
   }
 
   _addMessage(isSystem, author, body) {
-    let message = new Message(isSystem, author, body);
-    this.history.push({ ...message });
+    this.history.push(new Message(isSystem, author, body));
   }
   _getUserName(userId) {
     return this.users.find((u) => u.id === userId).name;

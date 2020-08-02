@@ -72,6 +72,14 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("message", ({ roomId, message }) => {
+    let room = data.getRoomById(roomId);
+    if (room) {
+      room.addUserMessage(room.getUserById(userId), message);
+      io.to(roomId).emit("message", room.getLastMessage());
+    }
+  });
+
   socket.on("disconnect", () => {
     console.log("a user disconnected");
   });
