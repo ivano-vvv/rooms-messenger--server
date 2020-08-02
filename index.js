@@ -22,6 +22,34 @@ io.on("connection", (socket) => {
     );
   });
 
+  socket.on("joinRoom", ({ roomId, userName }) => {
+    let room = data.getRoomById(roomId);
+    if (room) {
+      let addData = room.addUser(userName);
+
+      io.to(roomId).emit("newUser", {
+        message: addData.systemMsg,
+        users: room.users,
+      });
+
+      socket.join(roomId);
+
+      console.log(
+        `user ${room.users[room.users.length - 1].name} (${
+          room.users[room.users.length - 1].id
+        }) joined the Room "${room.name}" (${room.id})`
+      );
+
+
+      socket.emit("roomData", room);
+      console.log(
+        `user ${room.users[room.users.length - 1].name} (${
+          room.users[room.users.length - 1].id
+        }) get data about the Room "${room.name}" (${room.id})`
+      );
+    }
+  });
+
   socket.on("disconnect", () => {
     console.log("a user disconnected");
   });

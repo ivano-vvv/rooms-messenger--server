@@ -14,6 +14,11 @@ class Room {
     this.users.push(new User(userName));
 
     this._addSystemMessage(`${userName} joined the Room`);
+
+    return {
+      userData: this.users[this.users.length - 1],
+      systemMsg: this.history[this.history.length - 1],
+    };
   }
   removeUser(userId) {
     const index = this.users.findIndex((u) => u.id === userId);
