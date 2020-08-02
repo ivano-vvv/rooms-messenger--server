@@ -1,26 +1,17 @@
-const { default: User } = require("./userClass");
-const { default: Message } = require("./messageClass");
+const User = require("./userClass");
+const Message = require("./messageClass");
 const { v4: uuidv4 } = require("uuid");
 
-export default class Room {
-  constructor(creatorName, roomName) {
-    let firstUser = new User(creatorName);
-    let firstMessage = new Message(
-      true,
-      null,
-      `The room "${roomName}" created"`
-    );
-
-    this.id = uuidv4();
+class Room {
+  constructor(creatorName, roomName, id) {
+    this.id = id;
     this.name = roomName;
-    this.users = [{ ...firstUser }];
-    this.history = [{ ...firstMessage }];
+    this.users = [new User(creatorName)];
+    this.history = [new Message(true, null, `The room "${roomName}" created"`)];
   }
 
   addUser(userName) {
-    let newUser = new User(userName);
-
-    this.users.push({ ...newUser });
+    this.users.push(new User(userName));
 
     this._addSystemMessage(`${userName} joined the Room`);
   }
@@ -46,3 +37,5 @@ export default class Room {
     this._addMessage(true, null, body);
   }
 }
+
+module.exports = Room;

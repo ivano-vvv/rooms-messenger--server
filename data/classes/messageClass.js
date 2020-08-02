@@ -1,6 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 
-export default class Message {
+class Message {
   constructor(isService, author, body) {
     this.id = uuidv4();
     this.isService = isService;
@@ -8,3 +8,5 @@ export default class Message {
     this.body = body;
   }
 }
+
+module.exports = Message;
