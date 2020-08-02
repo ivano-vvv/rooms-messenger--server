@@ -14,21 +14,27 @@ class Room {
     this.users.push(new User(userName));
 
     this._addSystemMessage(`${userName} joined the Room`);
-
-    return {
-      userData: this.users[this.users.length - 1],
-      systemMsg: this.history[this.history.length - 1],
-    };
   }
   removeUser(userId) {
     const index = this.users.findIndex((u) => u.id === userId);
     if (index !== -1) {
-      this.users = this.users.splice(index, 1);
-      this._addSystemMessage(`${this._getUserName(userId)} left the Room`);
+      let name = this._getUserName(userId);
+      this.users.splice(index, 1);
+
+      this._addSystemMessage(`${name} left the Room`);
     }
   }
   addUserMessage(isSystem, author, body) {
     this._addMessage(false, author, body);
+  }
+  getLastMessage() {
+    return this.history[this.history.length - 1];
+  }
+  getLastUser() {
+    return this.users[this.users.length - 1];
+  }
+  getUserById(id) {
+    return this.users.find((u) => u.id === id);
   }
 
   _addMessage(isSystem, author, body) {

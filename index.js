@@ -16,7 +16,7 @@ io.on("connection", (socket) => {
       `user ${creatorName} (${room.users[0].id}) created a Room named "${roomName}" (${room.id})`
     );
 
-    io.to(id).emit("roomData", room);
+    io.to(id).emit("roomData", { room, userData: room.users[0] });
     console.log(
       `user ${creatorName} (${room.users[0].id}) get data about the Room "${roomName}" (${room.id})`
     );
@@ -25,10 +25,10 @@ io.on("connection", (socket) => {
   socket.on("joinRoom", ({ roomId, userName }) => {
     let room = data.getRoomById(roomId);
     if (room) {
-      let addData = room.addUser(userName);
+      room.addUser(userName);
 
       io.to(roomId).emit("newUser", {
-        message: addData.systemMsg,
+        message: room.getLastMessage(),
         users: room.users,
       });
 
@@ -40,12 +40,33 @@ io.on("connection", (socket) => {
         }) joined the Room "${room.name}" (${room.id})`
       );
 
+      socket.emit("roomData", { room, userData: room.getLastUser() });
 
-      socket.emit("roomData", room);
       console.log(
         `user ${room.users[room.users.length - 1].name} (${
           room.users[room.users.length - 1].id
         }) get data about the Room "${room.name}" (${room.id})`
+      );
+    }
+  });
+
+  socket.on("leaveRoom", ({ roomId, userId }) => {
+    let room = data.getRoomById(roomId);
+    if (room) {
+      let name = room.getUserById(userId).name;
+
+      socket.emit("logOut");
+      socket.leave(roomId);
+
+      room.removeUser(userId);
+
+      io.to(roomId).emit("removeUser", {
+        message: room.getLastMessage(),
+        users: room.users,
+      });
+
+      console.log(
+        `user ${name} (${userId}) left the Room "${room.name}" (${room.id})`
       );
     }
   });
