@@ -7,7 +7,7 @@ class Room {
     this.id = roomId;
     this.name = roomName;
     this.users = [new User(creatorName, firstUserId)];
-    this.history = [new Message(true, null, `The room "${roomName}" created"`)];
+    this.history = [new Message(true, null, `The room "${roomName}" created`)];
   }
 
   addUser(userName, userId) {
