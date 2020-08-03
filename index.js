@@ -4,7 +4,6 @@ const io = require("socket.io")(http);
 const port = process.env.PORT || 5000;
 
 const data = require("./data/rooms");
-const { getRoomById } = require("./data/rooms");
 
 io.on("connection", (socket) => {
   let userId = socket.id;
@@ -52,6 +51,11 @@ io.on("connection", (socket) => {
       );
 
       socket.emit("roomData", { room, userData: room.getLastUser() });
+      socket.emit("connectionData", {
+        userId,
+        roomId: room.id,
+        username: room.users[0].name,
+      });
 
       console.log(
         `user ${room.users[room.users.length - 1].name} (${
@@ -61,33 +65,40 @@ io.on("connection", (socket) => {
     }
   });
 
-  // socket.on("rejoinRoom", ({ userId, username, roomId }) => {
-  //   let room = data.getRoomById(roomId);
-  //   if (room) {
-  //     room.addUser(username, userId);
+  socket.on("rejoinRoom", ({ userId, username, roomId }) => {
+    let room = data.getRoomById(roomId);
+    if (room) {
+      userRoom = roomId;
 
-  //     io.to(roomId).emit("newUser", {
-  //       message: room.getLastMessage(),
-  //       users: room.users,
-  //     });
+      room.addUser(username, userId);
 
-  //     socket.join(roomId);
+      io.to(roomId).emit("newUser", {
+        message: room.getLastMessage(),
+        users: room.users,
+      });
 
-  //     console.log(
-  //       `user ${room.users[room.users.length - 1].name} (${
-  //         room.users[room.users.length - 1].id
-  //       }) joined the Room "${room.name}" (${room.id})`
-  //     );
+      socket.join(roomId);
 
-  //     socket.emit("roomData", { room, userData: room.getLastUser() });
+      console.log(
+        `user ${room.users[room.users.length - 1].name} (${
+          room.users[room.users.length - 1].id
+        }) joined the Room "${room.name}" (${room.id})`
+      );
 
-  //     console.log(
-  //       `user ${room.users[room.users.length - 1].name} (${
-  //         room.users[room.users.length - 1].id
-  //       }) get data about the Room "${room.name}" (${room.id})`
-  //     );
-  //   }
-  // });
+      socket.emit("roomData", { room, userData: room.getLastUser() });
+      socket.emit("connectionData", {
+        userId,
+        roomId: room.id,
+        username: room.users[0].name,
+      });
+
+      console.log(
+        `user ${room.users[room.users.length - 1].name} (${
+          room.users[room.users.length - 1].id
+        }) get data about the Room "${room.name}" (${room.id})`
+      );
+    }
+  });
 
   socket.on("leaveRoom", ({ roomId, userId }) => {
     let room = data.getRoomById(roomId);
@@ -122,11 +133,13 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     let room = data.getRoomById(userRoom);
 
-    room.removeUser(userId);
-    io.to(room.id).emit("removeUser", {
-      message: room.getLastMessage(),
-      users: room.users,
-    });
+    if (room) {
+      room.removeUser(userId);
+      io.to(room.id).emit("removeUser", {
+        message: room.getLastMessage(),
+        users: room.users,
+      });
+    }
   });
 });
 
