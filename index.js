@@ -9,7 +9,6 @@ const consoleMessages = require("./consoleMessages");
 io.on("connection", (socket) => {
   const user = {
     id: socket.id,
-    room: "",
   };
 
   consoleMessages.userConnected(user.id);
@@ -93,13 +92,13 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("leaveRoom", ({ roomId, userId }) => {
+  socket.on("leaveRoom", ({ roomId }) => {
     let room = data.getRoomById(roomId);
     if (room) {
       let name = room.getUserById(user.id).name;
 
       socket.emit("logOut");
-      socket.leave(roomId);
+      socket.leave(room.id);
       user.room = "";
 
       room.removeUser(user.id);
@@ -109,9 +108,7 @@ io.on("connection", (socket) => {
         users: room.users,
       });
 
-      console.log(
-        `user ${name} (${user.id}) left the Room "${room.name}" (${room.id})`
-      );
+      consoleMessages.userLeftRoom(name, user.id, room.name, room.id);
     }
   });
 
