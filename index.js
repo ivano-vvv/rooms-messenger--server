@@ -62,6 +62,8 @@ io.on("connection", (socket) => {
           room.users[room.users.length - 1].id
         }) get data about the Room "${room.name}" (${room.id})`
       );
+    } else {
+      socket.emit("invalidRoomId");
     }
   });
 
@@ -98,7 +100,7 @@ io.on("connection", (socket) => {
         }) get data about the Room "${room.name}" (${room.id})`
       );
     } else {
-      socket.emit("invalidData");
+      socket.emit("invalidRejoinData");
     }
   });
 
