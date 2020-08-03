@@ -2,9 +2,12 @@ const app = require("express")();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 const port = process.env.PORT || 5000;
+const cors = require("cors");
 
 const data = require("./data/rooms");
 const consoleMessages = require("./consoleMessages");
+
+app.use(cors());
 
 io.on("connection", (socket) => {
   const user = {
