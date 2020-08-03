@@ -22,6 +22,9 @@ const consoleMessages = {
       `user ${username} (${userId}) left the Room "${roomname}" (${roomId})`
     );
   },
+  roomHasBeenRemoved(name, id) {
+    this._log(`The Room "${name}" (${id}) has been removed`);
+  },
 
   _log(m) {
     console.log(m);

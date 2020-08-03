@@ -103,10 +103,22 @@ io.on("connection", (socket) => {
 
       room.removeUser(user.id);
 
-      io.to(roomId).emit("removeUser", {
-        message: room.getLastMessage(),
-        users: room.users,
-      });
+      if (room.users.length === 0) {
+        let removedRoomData = {
+          id: room.id,
+          name: room.name,
+        };
+        data.removeRoomById(room.id);
+        consoleMessages.roomHasBeenRemoved(
+          removedRoomData.name,
+          removedRoomData.id
+        );
+      } else {
+        io.to(roomId).emit("removeUser", {
+          message: room.getLastMessage(),
+          users: room.users,
+        });
+      }
 
       consoleMessages.userLeftRoom(name, user.id, room.name, room.id);
     }
