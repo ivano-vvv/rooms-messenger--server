@@ -5,7 +5,7 @@ const data = {
   createRoom(creatorName, roomName, firstUserId) {
     const roomId = uuidv4();
     this._addRoom(creatorName, roomName, roomId, firstUserId);
-    return roomId;
+    return this.getRoomById(roomId);
   },
   getRoomById(id) {
     return this._rooms.find((r) => r.id === id);
