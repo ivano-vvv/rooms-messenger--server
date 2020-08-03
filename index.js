@@ -35,36 +35,30 @@ io.on("connection", (socket) => {
 
   socket.on("joinRoom", ({ roomId, username }) => {
     let room = data.getRoomById(roomId);
+
     if (room) {
-      user.room = roomId;
+      user.room = room.id;
+      user.name = username;
 
-      room.addUser(username, user.id);
+      room.addUser(user.name, user.id);
 
-      io.to(roomId).emit("newUser", {
+      io.to(room.id).emit("newUser", {
         message: room.getLastMessage(),
         users: room.users,
       });
 
-      socket.join(roomId);
+      socket.join(room.id);
 
-      console.log(
-        `user ${room.users[room.users.length - 1].name} (${
-          room.users[room.users.length - 1].id
-        }) joined the Room "${room.name}" (${room.id})`
-      );
+      consoleMessages.userJoinedRoom(user.name, user.id, room.name, room.id);
 
       socket.emit("roomData", { room, userData: room.getLastUser() });
       socket.emit("connectionData", {
         userId: user.id,
         roomId: room.id,
-        username: room.users[0].name,
+        username: user.name,
       });
 
-      console.log(
-        `user ${room.users[room.users.length - 1].name} (${
-          room.users[room.users.length - 1].id
-        }) get data about the Room "${room.name}" (${room.id})`
-      );
+      consoleMessages.userGotRoomData(user.name, user.id, room.name, room.id);
     } else {
       socket.emit("invalidRoomId");
     }
@@ -84,24 +78,16 @@ io.on("connection", (socket) => {
 
       socket.join(roomId);
 
-      console.log(
-        `user ${room.users[room.users.length - 1].name} (${
-          room.users[room.users.length - 1].id
-        }) joined the Room "${room.name}" (${room.id})`
-      );
+      consoleMessages.userJoinedRoom(user.name, user.id, room.name, room.id);
 
       socket.emit("roomData", { room, userData: room.getLastUser() });
       socket.emit("connectionData", {
         userId: user.id,
         roomId: room.id,
-        username: room.users[0].name,
+        username: user.name,
       });
 
-      console.log(
-        `user ${room.users[room.users.length - 1].name} (${
-          room.users[room.users.length - 1].id
-        }) get data about the Room "${room.name}" (${room.id})`
-      );
+      consoleMessages.userGotRoomData(user.name, user.id, room.name, room.id);
     } else {
       socket.emit("invalidRejoinData");
     }
